@@ -3,6 +3,7 @@ using Serilog;
 using Shortly.Application.Interfaces;
 using Shortly.Application.Services;
 using Shortly.Infrastructure.Persistence;
+using Shortly.Infrastructure.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +36,25 @@ app.MapRazorPages().WithStaticAssets();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var logFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
-    var log = logFactory.CreateLogger<Program>();
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    var logger = services.GetRequiredService<ILogger<Program>>(); 
     
-    log.LogDebug("Initializing..");
-    // Aquí irían las migraciones y el seeding
+    try 
+    {
+        logger.LogDebug("Initializing Database and Seeding...");
+        
+        DbInitializer initializer = new DbInitializer();
+        initializer.Seed(dbContext, services.GetRequiredService<ILogger<DbInitializer>>())
+                     .GetAwaiter()
+                     .GetResult();
+                     
+        logger.LogDebug("Initialization OK.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during database initialization.");
+    }
 }
 
 app.Run();
