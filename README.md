@@ -20,7 +20,7 @@ El proyecto está organizado siguiendo el Layout oficial:
 ## Instalación y Ejecución
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/FelipeRojasC/Shortly.git](https://github.com/FelipeRojasC/Shortly.git)
+    git clone https://github.com/FelipeRojasC/Shortly.git
     cd Shortly
     ```
 2.  **Restaurar paquetes e instalar herramientas:** 
